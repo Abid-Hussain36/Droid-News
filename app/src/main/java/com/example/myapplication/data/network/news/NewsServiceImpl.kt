@@ -9,12 +9,13 @@ import io.ktor.client.features.RedirectResponseException
 import io.ktor.client.features.ServerResponseException
 import io.ktor.client.request.get
 import io.ktor.client.request.url
+import okhttp3.HttpUrl
 
 class NewsServiceImpl(private val client: HttpClient): NewsService {
-    override suspend fun getNews(): News {
+    override suspend fun getNews(searchURL: String): News {
         return try {
             client.get {
-                url(Constants.TEST_URL)
+                url(searchURL)
             }
         } catch(e: RedirectResponseException){
             //300 HTTP Code
