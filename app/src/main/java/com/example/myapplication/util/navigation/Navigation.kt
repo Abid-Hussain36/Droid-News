@@ -16,13 +16,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.data.database.SavedArticleDB
 import com.example.myapplication.ui.article_screen.ArticleScreen
 import com.example.myapplication.ui.home_screen.HomeScreen
 import com.example.myapplication.ui.saved_screen.SavedScreen
 import io.ktor.client.HttpClient
 
 @Composable
-fun Navigation(){
+fun Navigation(database: SavedArticleDB){
     val navController = rememberNavController()
 
     Scaffold(
@@ -33,10 +34,10 @@ fun Navigation(){
         ){
             NavHost(navController = navController, startDestination = Home.route){
                 composable(Home.route){
-                    HomeScreen()
+                    HomeScreen(database)
                 }
                 composable(Saved.route){
-                    SavedScreen()
+                    SavedScreen(database)
                 }
                 composable(Article.route){
                     ArticleScreen()

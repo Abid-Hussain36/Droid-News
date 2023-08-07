@@ -1,8 +1,6 @@
 package com.example.myapplication.ui.home_screen
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,15 +21,15 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -40,18 +38,20 @@ import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
-import coil.size.Scale
 import coil.transform.RoundedCornersTransformation
 import com.example.myapplication.R
+import com.example.myapplication.data.database.SavedArticle
+import com.example.myapplication.data.database.SavedArticleDB
 import com.example.myapplication.data.network.news.NewsService
 import com.example.myapplication.data.network.news.dto.Article
-import com.example.myapplication.util.Constants
-import okhttp3.HttpUrl
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @Composable
-fun HomeScreen(){
+fun HomeScreen(database: SavedArticleDB){
     val newsService = NewsService.create()
+    val savedArticleList by database.savedArticleDAO().getAllSavedArticles().observeAsState(initial = emptyList())
+    val scope = rememberCoroutineScope()
     var searchText by remember{
         mutableStateOf("")
     }
@@ -153,6 +153,36 @@ fun HomeScreen(){
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium
                         )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 12.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                          scope.launch {
+                                              database.clearAllTables()
+                                          }
+                                },
+                                modifier = Modifier.fillMaxWidth(.47f)
+                            ) {
+                                Text(text = "Open")
+                            }
+                            Spacer(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+                            Button(
+                                onClick = {
+                                    //Room operations must usually be performed in Coroutines.
+                                    scope.launch{
+                                        database.savedArticleDAO()
+                                            .insertSavedArticle(it.toSavedArticle())
+                                    }
+                                          },
+                                modifier = Modifier.fillMaxWidth(1f)
+                            ) {
+                                Text(text = "Save")
+                            }
+                        }
+                        Text(text = savedArticleList.size.toString())
                     }
                 }
             }
@@ -163,24 +193,34 @@ fun HomeScreen(){
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun CoilImage(imageUrl: String){
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxWidth()
-    ){
         val painter = rememberImagePainter(
             data = imageUrl,
             builder = {
                 transformations(
                     RoundedCornersTransformation(30f),
                 )
-                scale(Scale.FIT)
             }
         )
         val painterState = painter.state
         if(painterState is ImagePainter.State.Loading){
             CircularProgressIndicator()
-        } else{
-            Image(painter = painter, contentDescription = "Article Image")
+        }
+        else if(painterState is ImagePainter.State.Error){
+            Image(
+                painter = painterResource(R.drawable.baseline_newspaper_24),
+                contentDescription = "Article Image",
+                modifier = Modifier
+                    .width(500.dp)
+                    .height(500.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
+        else{
+            Image(
+                painter = painter,
+                contentDescription = "Article Image",
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
         }
     }
-}

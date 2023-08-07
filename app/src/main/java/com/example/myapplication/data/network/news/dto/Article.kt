@@ -1,5 +1,6 @@
 package com.example.myapplication.data.network.news.dto
 
+import com.example.myapplication.data.database.SavedArticle
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,4 +14,17 @@ data class Article(
     val urlToImage: String? = null,
     val publishedAt: String? = null,
     val content: String? = null
-)
+){
+    fun toSavedArticle(): SavedArticle{
+        return SavedArticle(
+            sourceName = source?.name,
+            author = author,
+            title = title,
+            description = description,
+            url = url,
+            urlToImage = urlToImage,
+            publishedAt = publishedAt,
+            content = content
+        )
+    }
+}
