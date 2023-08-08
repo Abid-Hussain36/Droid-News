@@ -35,6 +35,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
@@ -45,10 +46,12 @@ import com.example.myapplication.data.database.SavedArticleDB
 import com.example.myapplication.data.network.news.NewsService
 import com.example.myapplication.data.network.news.dto.Article
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 
 @Composable
-fun HomeScreen(database: SavedArticleDB){
+fun HomeScreen(navController: NavController, database: SavedArticleDB){
     val newsService = NewsService.create()
     val savedArticleList by database.savedArticleDAO().getAllSavedArticles().observeAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
@@ -160,9 +163,9 @@ fun HomeScreen(database: SavedArticleDB){
                         ) {
                             Button(
                                 onClick = {
-                                          scope.launch {
-                                              database.clearAllTables()
-                                          }
+                                          //Needed to encode the article URL for it to be registered as a String in Navigation.
+                                          val encodedUrl = URLEncoder.encode(it.url.toString(), StandardCharsets.UTF_8.toString())
+                                          navController.navigate(com.example.myapplication.util.navigation.Article.route + "/$encodedUrl")
                                 },
                                 modifier = Modifier.fillMaxWidth(.47f)
                             ) {

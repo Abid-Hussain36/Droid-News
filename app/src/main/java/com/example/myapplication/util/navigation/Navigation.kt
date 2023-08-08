@@ -13,14 +13,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.myapplication.data.database.SavedArticleDB
 import com.example.myapplication.ui.article_screen.ArticleScreen
 import com.example.myapplication.ui.home_screen.HomeScreen
 import com.example.myapplication.ui.saved_screen.SavedScreen
-import io.ktor.client.HttpClient
 
 @Composable
 fun Navigation(database: SavedArticleDB){
@@ -34,13 +35,20 @@ fun Navigation(database: SavedArticleDB){
         ){
             NavHost(navController = navController, startDestination = Home.route){
                 composable(Home.route){
-                    HomeScreen(database)
+                    HomeScreen(navController, database)
                 }
                 composable(Saved.route){
                     SavedScreen(database)
                 }
-                composable(Article.route){
-                    ArticleScreen()
+                composable(
+                    route = Article.route + "/{articleURL}",
+                    arguments = listOf(
+                        navArgument("articleURL"){
+                            type = NavType.StringType
+                        }
+                    )
+                ){entry ->
+                    ArticleScreen(articleURL = entry.arguments?.getString("articleURL").toString())
                 }
             }
         }
