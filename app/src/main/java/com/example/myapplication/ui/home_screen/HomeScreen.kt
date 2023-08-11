@@ -19,6 +19,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +45,7 @@ import com.example.myapplication.data.network.news.dto.Article
 import com.example.myapplication.ui.composables.CoilImage
 import com.example.myapplication.ui.theme.Purple40
 import com.example.myapplication.ui.theme.Purple80
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -134,131 +136,141 @@ fun HomeScreen(navController: NavController, database: SavedArticleDB){
             }
         }
         else{
-        LazyColumn(
-            modifier = Modifier.padding(top = 28.dp)
-        ) {
-            items(articles.value) {
-                Card(
+            DisplayArticles(
+                articles = articles,
+                database = database,
+                scope = scope,
+                navController = navController
+            )
+        }
+    }
+}
+
+@Composable
+fun DisplayArticles(articles: State<List<Article>>, database: SavedArticleDB, scope: CoroutineScope, navController: NavController){
+    LazyColumn(
+        modifier = Modifier.padding(top = 28.dp)
+    ) {
+        items(articles.value) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        bottom = 20.dp
+                    ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 8.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                ),
+                shape = RoundedCornerShape(30.dp)
+            ) {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            bottom = 20.dp
-                        ),
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 8.dp
-                    ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White
-                    ),
-                    shape = RoundedCornerShape(30.dp)
                 ) {
+                    if (it.urlToImage != null) {
+                        CoilImage(imageUrl = it.urlToImage.toString())
+                    }
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        modifier = Modifier.padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 10.dp
+                        )
                     ) {
-                        if (it.urlToImage != null) {
-                            CoilImage(imageUrl = it.urlToImage.toString())
-                        }
-                        Column(
-                            modifier = Modifier.padding(
-                                start = 16.dp,
-                                end = 16.dp,
-                                top = 10.dp
+                        if(it.title != null){
+                            Text(
+                                text = it.title.toString(),
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold
                             )
+                        }
+                        if(it.source?.name != null){
+                            Text(
+                                text = it.source.name.toString(),
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(top = 2.dp),
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Gray
+                            )
+                        }
+                        if(it.content != null){
+                            Text(
+                                text = it.content.toString(),
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(top = 8.dp),
+                                fontWeight = FontWeight.Medium,
+                                color = Color.DarkGray
+                            )
+                        }
+                        if(it.publishedAt != null){
+                            Text(
+                                text = "${
+                                    it.publishedAt.toString().substring(5, 7)
+                                }/${
+                                    it.publishedAt.toString().substring(8, 10)
+                                }/${it.publishedAt.toString().substring(0, 4)}",
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(top = 6.dp),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 12.dp, bottom = 16.dp)
                         ) {
-                            if(it.title != null){
-                                Text(
-                                    text = it.title.toString(),
-                                    fontSize = 22.sp,
-                                    fontWeight = FontWeight.Bold
+                            Button(
+                                onClick = {
+                                    //Needed to encode the article URL for it to be registered as a String in Navigation.
+                                    val encodedUrl = URLEncoder.encode(
+                                        it.url.toString(),
+                                        StandardCharsets.UTF_8.toString()
+                                    )
+                                    navController.navigate(com.example.myapplication.util.navigation.Article.route + "/$encodedUrl")
+                                },
+                                modifier = Modifier.fillMaxWidth(.47f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF114bfa),
+                                    contentColor = Color(0xFFFFFFFF)
                                 )
-                            }
-                            if(it.source?.name != null){
-                                Text(
-                                    text = it.source.name.toString(),
-                                    fontSize = 18.sp,
-                                    modifier = Modifier.padding(top = 2.dp),
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color.Gray
-                                )
-                            }
-                            if(it.content != null){
-                                Text(
-                                    text = it.content.toString(),
-                                    fontSize = 16.sp,
-                                    modifier = Modifier.padding(top = 8.dp),
-                                    fontWeight = FontWeight.Medium,
-                                    color = Color.DarkGray
-                                )
-                            }
-                            if(it.publishedAt != null){
-                                Text(
-                                    text = "${
-                                        it.publishedAt.toString().substring(5, 7)
-                                    }/${
-                                        it.publishedAt.toString().substring(8, 10)
-                                    }/${it.publishedAt.toString().substring(0, 4)}",
-                                    fontSize = 18.sp,
-                                    modifier = Modifier.padding(top = 6.dp),
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, bottom = 16.dp)
                             ) {
-                                Button(
-                                    onClick = {
-                                        //Needed to encode the article URL for it to be registered as a String in Navigation.
-                                        val encodedUrl = URLEncoder.encode(
-                                            it.url.toString(),
-                                            StandardCharsets.UTF_8.toString()
-                                        )
-                                        navController.navigate(com.example.myapplication.util.navigation.Article.route + "/$encodedUrl")
-                                    },
-                                    modifier = Modifier.fillMaxWidth(.47f),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF114bfa),
-                                        contentColor = Color(0xFFFFFFFF)
-                                    )
-                                ) {
-                                    Text(
-                                        text = "Open",
-                                        fontSize = 16.sp,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                                Spacer(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
-                                Button(
-                                    onClick = {
-                                        //Room operations must usually be performed in Coroutines.
-                                        scope.launch {
-                                            database.savedArticleDAO()
-                                                .insertSavedArticle(it.toSavedArticle())
-                                        }
-                                    },
-                                    modifier = Modifier.fillMaxWidth(1f),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF114bfa),
-                                        contentColor = Color(0xFFFFFFFF)
-                                    )
-                                ) {
-                                    Text(
-                                        text = "Save",
-                                        fontSize = 16.sp,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
+                                Text(
+                                    text = "Open",
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                            Spacer(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+                            Button(
+                                onClick = {
+                                    //Room operations must usually be performed in Coroutines.
+                                    scope.launch {
+                                        database.savedArticleDAO()
+                                            .insertSavedArticle(it.toSavedArticle())
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF114bfa),
+                                    contentColor = Color(0xFFFFFFFF)
+                                )
+                            ) {
+                                Text(
+                                    text = "Save",
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
                             }
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
             }
+            Spacer(modifier = Modifier.height(8.dp))
         }
-    }
     }
 }
