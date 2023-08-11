@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -48,7 +49,7 @@ fun SavedScreen(navController: NavController, database: SavedArticleDB){
     val savedArticleList = if(searchText.isEmpty()){
         savedArticleDatabaseList
     } else{
-        savedArticleDatabaseList.filter { it.title.toString().toLowerCase().contains(searchText) }
+        savedArticleDatabaseList.filter { it.title.toString().toLowerCase().contains(searchText.toLowerCase()) }
     }
     val scope = rememberCoroutineScope()
 
@@ -121,7 +122,7 @@ fun DisplaySavedArticles(savedArticleList: List<SavedArticle>, scope: CoroutineS
                         .fillMaxWidth()
                 ) {
                     if(it.urlToImage != null){
-                        CoilImage(imageUrl = it.urlToImage.toString())
+                        CoilImage(imageUrl = it.urlToImage)
                     }
                     Column(
                         modifier = Modifier.padding(
@@ -130,35 +131,43 @@ fun DisplaySavedArticles(savedArticleList: List<SavedArticle>, scope: CoroutineS
                             top = 10.dp
                         )
                     ){
-                        Text(
-                            text = it.title.toString(),
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = it.sourceName.toString(),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(top = 2.dp),
-                            color = Color.Gray
-                        )
-                        Text(
-                            text = it.content.toString(),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(top = 8.dp),
-                            color = Color.DarkGray
-                        )
-                        Text(
-                            text = "${
-                                it.publishedAt.toString().substring(5, 7)
-                            }/${
-                                it.publishedAt.toString().substring(8, 10)
-                            }/${it.publishedAt.toString().substring(0, 4)}",
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(top = 6.dp),
-                            fontWeight = FontWeight.Medium
-                        )
+                        if(it.title != null){
+                            Text(
+                                text = it.title,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        if(it.sourceName != null){
+                            Text(
+                                text = it.sourceName,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(top = 2.dp),
+                                color = Color.Gray
+                            )
+                        }
+                        if(it.content != null){
+                            Text(
+                                text = it.content,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(top = 8.dp),
+                                color = Color.DarkGray
+                            )
+                        }
+                        if(it.publishedAt != null){
+                            Text(
+                                text = "${
+                                    it.publishedAt.substring(5, 7)
+                                }/${
+                                    it.publishedAt.substring(8, 10)
+                                }/${it.publishedAt.substring(0, 4)}",
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(top = 6.dp),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()

@@ -171,7 +171,7 @@ fun DisplayArticles(articles: State<List<Article>>, database: SavedArticleDB, sc
                         .fillMaxWidth()
                 ) {
                     if (it.urlToImage != null) {
-                        CoilImage(imageUrl = it.urlToImage.toString())
+                        CoilImage(imageUrl = it.urlToImage)
                     }
                     Column(
                         modifier = Modifier.padding(
@@ -182,14 +182,14 @@ fun DisplayArticles(articles: State<List<Article>>, database: SavedArticleDB, sc
                     ) {
                         if(it.title != null){
                             Text(
-                                text = it.title.toString(),
+                                text = it.title,
                                 fontSize = 22.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
                         if(it.source?.name != null){
                             Text(
-                                text = it.source.name.toString(),
+                                text = it.source.name,
                                 fontSize = 18.sp,
                                 modifier = Modifier.padding(top = 2.dp),
                                 fontWeight = FontWeight.SemiBold,
@@ -198,7 +198,7 @@ fun DisplayArticles(articles: State<List<Article>>, database: SavedArticleDB, sc
                         }
                         if(it.content != null){
                             Text(
-                                text = it.content.toString(),
+                                text = it.content,
                                 fontSize = 16.sp,
                                 modifier = Modifier.padding(top = 8.dp),
                                 fontWeight = FontWeight.Medium,
@@ -208,10 +208,10 @@ fun DisplayArticles(articles: State<List<Article>>, database: SavedArticleDB, sc
                         if(it.publishedAt != null){
                             Text(
                                 text = "${
-                                    it.publishedAt.toString().substring(5, 7)
+                                    it.publishedAt.substring(5, 7)
                                 }/${
-                                    it.publishedAt.toString().substring(8, 10)
-                                }/${it.publishedAt.toString().substring(0, 4)}",
+                                    it.publishedAt.substring(8, 10)
+                                }/${it.publishedAt.substring(0, 4)}",
                                 fontSize = 18.sp,
                                 modifier = Modifier.padding(top = 6.dp),
                                 fontWeight = FontWeight.Medium
