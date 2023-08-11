@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -28,7 +29,9 @@ fun Navigation(database: SavedArticleDB){
     val navController = rememberNavController()
 
     Scaffold(
-        bottomBar = { BottomNavBar(navController = navController) }
+        bottomBar = {
+            BottomNavBar(navController = navController)
+        }
     ) {
         Box(
             modifier = Modifier.padding(it)
@@ -38,7 +41,7 @@ fun Navigation(database: SavedArticleDB){
                     HomeScreen(navController, database)
                 }
                 composable(Saved.route){
-                    SavedScreen(database)
+                    SavedScreen(navController, database)
                 }
                 composable(
                     route = Article.route + "/{articleURL}",

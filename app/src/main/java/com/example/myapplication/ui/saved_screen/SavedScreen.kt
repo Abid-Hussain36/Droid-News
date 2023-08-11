@@ -1,19 +1,19 @@
 package com.example.myapplication.ui.saved_screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,23 +24,23 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.annotation.ExperimentalCoilApi
-import coil.compose.ImagePainter
-import coil.compose.rememberImagePainter
-import coil.transform.RoundedCornersTransformation
-import com.example.myapplication.R
+import androidx.navigation.NavController
 import com.example.myapplication.data.database.SavedArticle
 import com.example.myapplication.data.database.SavedArticleDB
+import com.example.myapplication.ui.composables.CoilImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
-fun SavedScreen(database: SavedArticleDB){
+fun SavedScreen(navController: NavController, database: SavedArticleDB){
     val savedArticleDatabaseList by database.savedArticleDAO().getAllSavedArticles().observeAsState(initial = emptyList())
     var searchText by remember{
         mutableStateOf("")
@@ -53,14 +53,14 @@ fun SavedScreen(database: SavedArticleDB){
     val scope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier.padding(20.dp)
+        modifier = Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp)
     ) {
         Row(
             modifier = Modifier
                 //.padding(20.dp)
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally)
-                .fillMaxHeight(.1f)
+                .fillMaxHeight(.08f)
         ){
             OutlinedTextField(
                 value = searchText,
@@ -75,68 +75,140 @@ fun SavedScreen(database: SavedArticleDB){
                 )
             )
         }
-        displaySavedArticles(
-            savedArticleList = savedArticleList,
-            scope = scope,
-            database = database
-        )
+        if(savedArticleDatabaseList.isEmpty()){
+            Column(
+                modifier = Modifier
+                    .padding(top = 28.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = "You have no saved articles.",
+                    fontSize = 20.sp
+                )
+            }
+        }
+        else{
+            DisplaySavedArticles(
+                savedArticleList = savedArticleList,
+                scope = scope,
+                navController = navController,
+                database = database
+            )
+        }
     }
 }
 
 @Composable
-fun displaySavedArticles(savedArticleList: List<SavedArticle>, scope: CoroutineScope, database: SavedArticleDB){
+fun DisplaySavedArticles(savedArticleList: List<SavedArticle>, scope: CoroutineScope, navController: NavController, database: SavedArticleDB){
     LazyColumn(
         modifier = Modifier.padding(top = 28.dp)
     ){
         items(savedArticleList){
             Card(
-                modifier = Modifier.padding(bottom = 20.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 20.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 8.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                ),
+                shape = RoundedCornerShape(30.dp)
             ) {
-                Text(text = it.title.toString())
-                Button(onClick = {
-                    scope.launch {
-                        database.savedArticleDAO().deleteSavedArticle(it)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    if(it.urlToImage != null){
+                        CoilImage(imageUrl = it.urlToImage.toString())
                     }
-                }) {
-                    Text("Delete")
+                    Column(
+                        modifier = Modifier.padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 10.dp
+                        )
+                    ){
+                        Text(
+                            text = it.title.toString(),
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = it.sourceName.toString(),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(top = 2.dp),
+                            color = Color.Gray
+                        )
+                        Text(
+                            text = it.content.toString(),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(top = 8.dp),
+                            color = Color.DarkGray
+                        )
+                        Text(
+                            text = "${
+                                it.publishedAt.toString().substring(5, 7)
+                            }/${
+                                it.publishedAt.toString().substring(8, 10)
+                            }/${it.publishedAt.toString().substring(0, 4)}",
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(top = 6.dp),
+                            fontWeight = FontWeight.Medium
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 12.dp, bottom = 16.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                    val encodedUrl = URLEncoder.encode(
+                                        it.url.toString(),
+                                        StandardCharsets.UTF_8.toString()
+                                    )
+                                    navController.navigate(com.example.myapplication.util.navigation.Article.route + "/$encodedUrl")
+                                },
+                                modifier = Modifier.fillMaxWidth(.47f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF114bfa),
+                                    contentColor = Color(0xFFFFFFFF)
+                                )
+                            ) {
+                                Text(
+                                    text = "Open",
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                            Spacer(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+                            Button(
+                                onClick = {
+                                    scope.launch {
+                                        database.savedArticleDAO().deleteSavedArticle(it)
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF114bfa),
+                                    contentColor = Color(0xFFFFFFFF)
+                                )
+                            ) {
+                                Text(
+                                    "Delete",
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
                 }
             }
-
         }
-    }
-}
-
-@OptIn(ExperimentalCoilApi::class)
-@Composable
-fun CoilImage(imageUrl: String){
-    val painter = rememberImagePainter(
-        data = imageUrl,
-        builder = {
-            transformations(
-                RoundedCornersTransformation(30f),
-            )
-        }
-    )
-    val painterState = painter.state
-    if(painterState is ImagePainter.State.Loading){
-        CircularProgressIndicator()
-    }
-    else if(painterState is ImagePainter.State.Error){
-        Image(
-            painter = painterResource(R.drawable.baseline_newspaper_24),
-            contentDescription = "Article Image",
-            modifier = Modifier
-                .width(500.dp)
-                .height(500.dp),
-            contentScale = ContentScale.Crop
-        )
-    }
-    else{
-        Image(
-            painter = painter,
-            contentDescription = "Article Image",
-            modifier = Modifier
-                .fillMaxWidth()
-        )
     }
 }
