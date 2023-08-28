@@ -21,10 +21,8 @@ NewsApp is a fully funcional Android app that allows users to peruse news articl
 
 ### App Demo
 
-<p float="left">
   <img src="https://github.com/Abid-Hussain36/NewsApp/assets/96400204/a2d32a9c-06d5-40d0-9c87-4d2d21779eed" width="50">
   <img src="https://github.com/Abid-Hussain36/NewsApp/assets/96400204/a2d32a9c-06d5-40d0-9c87-4d2d21779eed" width="50" /> 
   <img src="https://github.com/Abid-Hussain36/NewsApp/assets/96400204/a2d32a9c-06d5-40d0-9c87-4d2d21779eed" width="50" /> 
-</p>
 
 
