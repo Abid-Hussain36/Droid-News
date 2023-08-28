@@ -20,12 +20,11 @@ NewsApp is a fully funcional Android app that allows users to peruse news articl
 * How to methodically debug software by paying close attention to detail.
 
 ### App Demo
- ![SearchedArticles](https://github.com/Abid-Hussain36/NewsApp/assets/96400204/a2d32a9c-06d5-40d0-9c87-4d2d21779eed)![image](https://github.com/Abid-Hussain36/NewsApp/assets/96400204/9cd0fb38-8631-42bb-a4ec-8e603a3c7cc6)
 
 <p float="left">
-  <img src="https://github.com/Abid-Hussain36/NewsApp/assets/96400204/a2d32a9c-06d5-40d0-9c87-4d2d21779eed" width="100" />
-  <img src="https://github.com/Abid-Hussain36/NewsApp/assets/96400204/a2d32a9c-06d5-40d0-9c87-4d2d21779eed" width="100" /> 
-  <img src="https://github.com/Abid-Hussain36/NewsApp/assets/96400204/a2d32a9c-06d5-40d0-9c87-4d2d21779eed" width="100" /> 
+  <img src="https://github.com/Abid-Hussain36/NewsApp/assets/96400204/a2d32a9c-06d5-40d0-9c87-4d2d21779eed" width="50">
+  <img src="https://github.com/Abid-Hussain36/NewsApp/assets/96400204/a2d32a9c-06d5-40d0-9c87-4d2d21779eed" width="50" /> 
+  <img src="https://github.com/Abid-Hussain36/NewsApp/assets/96400204/a2d32a9c-06d5-40d0-9c87-4d2d21779eed" width="50" /> 
 </p>
 
 
