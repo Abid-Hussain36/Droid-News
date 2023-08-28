@@ -20,8 +20,6 @@ NewsApp is a fully funcional Android app that allows users to peruse news articl
 * How to methodically debug software by paying close attention to detail.
 
 ### App Demo
-![HomeScreen](https://github.com/Abid-Hussain36/NewsApp/assets/96400204/c8bad715-4228-44f6-81ba-058df0a3704c)![image](https://github.com/Abid-Hussain36/NewsApp/assets/96400204/0a50ca9b-ad52-4adf-b71f-38ebee282a3b)
-
-![SearchedArticles](https://github.com/Abid-Hussain36/NewsApp/assets/96400204/a2d32a9c-06d5-40d0-9c87-4d2d21779eed)![image](https://github.com/Abid-Hussain36/NewsApp/assets/96400204/9cd0fb38-8631-42bb-a4ec-8e603a3c7cc6)
+![HomeScreen](https://github.com/Abid-Hussain36/NewsApp/assets/96400204/c8bad715-4228-44f6-81ba-058df0a3704c)![image](https://github.com/Abid-Hussain36/NewsApp/assets/96400204/0a50ca9b-ad52-4adf-b71f-38ebee282a3b) ![SearchedArticles](https://github.com/Abid-Hussain36/NewsApp/assets/96400204/a2d32a9c-06d5-40d0-9c87-4d2d21779eed)![image](https://github.com/Abid-Hussain36/NewsApp/assets/96400204/9cd0fb38-8631-42bb-a4ec-8e603a3c7cc6)
 
 
