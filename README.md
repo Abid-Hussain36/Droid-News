@@ -3,7 +3,7 @@
 ### Description
 NewsApp is a fully funcional Android app that allows users to peruse news articles from a plethora of sources, save their favorite articles, and open the articles on a mobile webview to read them.
 
-### Specifications
+### Specifications###
 * App fetches data for latest headlines within 7 days of the current date from the NewsAPI on launch using the Ktor library.
 * The recieved data is parsed and displayed using a LazyColumn composable holding a list of Card composables to display each of the fetched articles.
 * The images for each of the fetched articles are asynchronously loaded with the Coil library.
