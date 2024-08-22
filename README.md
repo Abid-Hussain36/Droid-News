@@ -1,4 +1,4 @@
-# Android Jetpack Compose News App
+# Droid News
 
 ### Description
 NewsApp is a fully funcional Android app that allows users to peruse news articles from a plethora of sources, save their favorite articles, and open the articles on a mobile webview to read them.
